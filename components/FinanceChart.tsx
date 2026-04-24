@@ -130,7 +130,7 @@ export default function FinanceChart({ transactions }: Props) {
                                 }}
                                 itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                 labelStyle={{ color: '#94a3b8', marginBottom: '8px', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-                                formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, '']}
+                                formatter={(value: any) => [`R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, '']}
                             />
                             <Legend 
                                 verticalAlign="top" 
@@ -168,7 +168,7 @@ export default function FinanceChart({ transactions }: Props) {
                                         boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
                                     }}
                                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
-                                    formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`]}
+                                    formatter={(value: any) => [`R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`]}
                                 />
                             </PieChart>
                         </ResponsiveContainer>

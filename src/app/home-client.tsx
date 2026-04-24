@@ -23,7 +23,7 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
         <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-xl shadow-blue-500/20 mb-12">
           <Wallet size={24} className="text-white" />
         </div>
-        
+
         <nav className="flex-1 flex flex-col gap-8">
           <button className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <LayoutDashboard size={24} />
@@ -56,13 +56,13 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
           <div className="flex items-center gap-4">
             <div className="hidden lg:flex items-center gap-3 px-5 py-3 bg-slate-950/50 rounded-2xl border border-white/5 w-80 group focus-within:border-blue-500/30 transition-all">
               <Search size={18} className="text-slate-500 group-focus-within:text-blue-400" />
-              <input 
-                type="text" 
-                placeholder="Pesquisar transações..." 
+              <input
+                type="text"
+                placeholder="Pesquisar transações..."
                 className="bg-transparent border-none outline-none text-sm text-slate-300 placeholder-slate-600 w-full"
               />
             </div>
-            
+
             <button className="relative p-3 rounded-2xl bg-slate-950/50 border border-white/5 text-slate-400 hover:text-white transition-all">
               <Bell size={20} />
               <span className="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-[#020617]" />
@@ -96,7 +96,7 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
               editingTransaction={editingTransaction}
               onCancelEdit={() => setEditingTransaction(null)}
             />
-            
+
             {/* Promo/Card Visual Only */}
             <div className="mt-8 p-8 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 relative overflow-hidden group">
               <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-all duration-700" />

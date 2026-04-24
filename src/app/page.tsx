@@ -4,10 +4,10 @@ import HomeClient from './home-client'
 export const revalidate = 0
 
 export default async function Home() {
-    const [transactions, summary] = await Promise.all([
-        getTransactions(),
-        getSummary(),
-    ])
+  const [transactions, summary] = await Promise.all([
+    getTransactions(),
+    getSummary(),
+  ])
 
-    return <HomeClient transactions={transactions} summary={summary} />
+  return <HomeClient transactions={transactions} summary={summary} />
 }
