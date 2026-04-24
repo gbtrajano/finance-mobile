@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'FinControl - Controle Financeiro',
-  description: 'Sistema de controle financeiro pessoal',
+  title: 'Finanças Pessoais do Gabriel',
+  description: 'Finanças Pessoais do Gabriel',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

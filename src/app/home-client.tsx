@@ -44,7 +44,7 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h1 className="text-4xl font-black premium-gradient-text tracking-tighter">
-              Olá, Investidor
+              Olá, Gabriel Trajano
             </h1>
             <div className="flex items-center gap-2 text-slate-500 text-sm font-semibold mt-1">
               <span>Dashboard</span>
