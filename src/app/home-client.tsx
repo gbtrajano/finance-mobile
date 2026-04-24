@@ -1,20 +1,30 @@
-'use client'
-
-import { useState } from 'react'
-import { Wallet, Bell, Search, User, LayoutDashboard, Settings, LogOut, ChevronRight } from 'lucide-react'
-import { Transaction } from '../../lib/types'
-import TransactionForm from '../../components/TransactionForm'
-import TransactionList from '../../components/TransactionList'
-import FinanceChart from '../../components/FinanceChart'
-import SummaryCards from '../../components/SummaryCards'
+"use client";
+import { logoutAction } from "./login/actions";
+import { useState } from "react";
+import {
+  Wallet,
+  Bell,
+  Search,
+  User,
+  LayoutDashboard,
+  Settings,
+  LogOut,
+  ChevronRight,
+} from "lucide-react";
+import { Transaction } from "../../lib/types";
+import TransactionForm from "../../components/TransactionForm";
+import TransactionList from "../../components/TransactionList";
+import FinanceChart from "../../components/FinanceChart";
+import SummaryCards from "../../components/SummaryCards";
 
 interface HomeClientProps {
-  transactions: Transaction[]
-  summary: { balance: number; totalIncome: number; totalExpense: number }
+  transactions: Transaction[];
+  summary: { balance: number; totalIncome: number; totalExpense: number };
 }
 
 export default function HomeClient({ transactions, summary }: HomeClientProps) {
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#020617]">
@@ -33,7 +43,10 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
           </button>
         </nav>
 
-        <button className="p-3 rounded-2xl text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-auto">
+        <button 
+          onClick={() => logoutAction()}
+          className="p-3 rounded-2xl text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-auto"
+        >
           <LogOut size={24} />
         </button>
       </aside>
@@ -55,23 +68,15 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
 
           <div className="flex items-center gap-4">
             <div className="hidden lg:flex items-center gap-3 px-5 py-3 bg-slate-950/50 rounded-2xl border border-white/5 w-80 group focus-within:border-blue-500/30 transition-all">
-              <Search size={18} className="text-slate-500 group-focus-within:text-blue-400" />
+              <Search
+                size={18}
+                className="text-slate-500 group-focus-within:text-blue-400"
+              />
               <input
                 type="text"
                 placeholder="Pesquisar transações..."
                 className="bg-transparent border-none outline-none text-sm text-slate-300 placeholder-slate-600 w-full"
               />
-            </div>
-
-            <button className="relative p-3 rounded-2xl bg-slate-950/50 border border-white/5 text-slate-400 hover:text-white transition-all">
-              <Bell size={20} />
-              <span className="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-[#020617]" />
-            </button>
-
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 p-0.5 flex items-center justify-center cursor-pointer hover:scale-105 transition-all">
-              <div className="h-full w-full rounded-[14px] bg-slate-950 flex items-center justify-center">
-                <User size={20} className="text-blue-400" />
-              </div>
             </div>
           </div>
         </header>
@@ -96,19 +101,9 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
               editingTransaction={editingTransaction}
               onCancelEdit={() => setEditingTransaction(null)}
             />
-
-            {/* Promo/Card Visual Only */}
-            <div className="mt-8 p-8 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-all duration-700" />
-              <h4 className="text-white font-black text-xl mb-2 relative">Upgrade Pro</h4>
-              <p className="text-indigo-100 text-sm mb-6 relative">Acesse análises avançadas e relatórios de exportação.</p>
-              <button className="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl text-sm hover:bg-indigo-50 transition-all relative">
-                Saber Mais
-              </button>
-            </div>
           </div>
         </div>
       </main>
     </div>
-  )
+  );
 }
