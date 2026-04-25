@@ -1,4 +1,4 @@
-import { getTransactions, getSummary } from '../../lib/actions'
+import { getTransactions, getSummary, getCategories } from '../../lib/actions'
 import HomeClient from './home-client'
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -13,10 +13,11 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const [transactions, summary] = await Promise.all([
+  const [transactions, summary, categories] = await Promise.all([
     getTransactions(),
     getSummary(),
+    getCategories(),
   ])
 
-  return <HomeClient transactions={transactions} summary={summary} />
+  return <HomeClient transactions={transactions} summary={summary} categories={categories} />
 }

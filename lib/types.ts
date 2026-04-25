@@ -1,3 +1,11 @@
+export type Category = {
+    id: string
+    name: string
+    color: string
+    icon: string
+    created_at: string
+}
+
 export type Transaction = {
     id: string
     title: string
@@ -6,6 +14,8 @@ export type Transaction = {
     type: 'income' | 'expense'
     transaction_date: string
     created_at: string
+    category_id: string | null
+    category?: Category | null
 }
 
 export type TransactionFormData = {
@@ -15,4 +25,5 @@ export type TransactionFormData = {
     type: 'income' | 'expense'
     date: string
     time: string
+    category_id: string | null
 }

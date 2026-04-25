@@ -13,7 +13,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Transaction } from "../lib/types";
+import { Transaction, Category } from "../lib/types";
 import {
   format,
   startOfMonth,
@@ -21,6 +21,10 @@ import {
   eachMonthOfInterval,
   subMonths,
   isWithinInterval,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  subDays,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
@@ -28,71 +32,86 @@ import { BarChart3, PieChart as PieChartIcon } from "lucide-react";
 
 interface Props {
   transactions: Transaction[];
+  categories: Category[];
 }
 
-const COLORS = ["#10b981", "#f43f5e"];
+const PIE_COLORS = ["#10b981", "#f43f5e"];
 
-export default function FinanceChart({ transactions }: Props) {
+type PeriodFilter = "month" | "week";
+
+export default function FinanceChart({ transactions, categories }: Props) {
   const [chartType, setChartType] = useState<"bar" | "pie">("bar");
+  const [period, setPeriod] = useState<PeriodFilter>("month");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const now = new Date();
-  const months = eachMonthOfInterval({
-    start: subMonths(now, 5),
-    end: now,
-  });
 
-  const chartData = months.map((month) => {
-    const monthStart = startOfMonth(month);
-    const monthEnd = endOfMonth(month);
+  // Filtrar por categoria
+  const filteredByCategory =
+    selectedCategory === "all"
+      ? transactions
+      : transactions.filter((t) => t.category_id === selectedCategory);
 
-    const filtered = transactions.filter((t) =>
-      isWithinInterval(new Date(t.transaction_date), {
-        start: monthStart,
-        end: monthEnd,
-      }),
-    );
+  // --- Dados do Gráfico de Barras ---
+  let barData: { name: string; receitas: number; despesas: number }[] = [];
 
-    const income = filtered
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+  if (period === "month") {
+    const months = eachMonthOfInterval({ start: subMonths(now, 5), end: now });
+    barData = months.map((month) => {
+      const start = startOfMonth(month);
+      const end = endOfMonth(month);
+      const inRange = filteredByCategory.filter((t) =>
+        isWithinInterval(new Date(t.transaction_date), { start, end })
+      );
+      return {
+        name: format(month, "MMM", { locale: ptBR }).replace(".", "").toUpperCase(),
+        receitas: inRange.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0),
+        despesas: inRange.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0),
+      };
+    });
+  } else {
+    // Semana: últimos 7 dias, um ponto por dia
+    const days = eachDayOfInterval({ start: subDays(now, 6), end: now });
+    barData = days.map((day) => {
+      const start = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0);
+      const end = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59);
+      const inRange = filteredByCategory.filter((t) =>
+        isWithinInterval(new Date(t.transaction_date), { start, end })
+      );
+      return {
+        name: format(day, "EEE", { locale: ptBR }).replace(".", "").toUpperCase(),
+        receitas: inRange.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0),
+        despesas: inRange.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0),
+      };
+    });
+  }
 
-    const expense = filtered
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    return {
-      name: format(month, "MMM", { locale: ptBR })
-        .replace(".", "")
-        .toUpperCase(),
-      receitas: income,
-      despesas: expense,
-    };
-  });
-
-  const totalIncome = transactions
+  // --- Dados do Gráfico de Pizza ---
+  const totalIncome = filteredByCategory
     .filter((t) => t.type === "income")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
-
-  const totalExpense = transactions
+    .reduce((s, t) => s + Number(t.amount), 0);
+  const totalExpense = filteredByCategory
     .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+    .reduce((s, t) => s + Number(t.amount), 0);
 
   const pieData = [
     { name: "Receitas", value: totalIncome },
     { name: "Despesas", value: totalExpense },
   ];
 
+  const selectedCategoryObj = categories.find((c) => c.id === selectedCategory);
+
   return (
     <div className="glass-card rounded-[2rem] p-8">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold premium-gradient-text flex items-center gap-3">
-            Análise de Fluxo
-          </h2>
+          <h2 className="text-xl font-bold premium-gradient-text">Análise de Fluxo</h2>
           <p className="text-slate-500 text-xs font-medium uppercase tracking-widest mt-1">
             Visão detalhada do seu patrimônio
           </p>
         </div>
+        {/* Seletor de tipo de gráfico */}
         <div className="flex gap-2 bg-slate-950/50 p-1.5 rounded-2xl border border-white/5 shadow-inner">
           <button
             onClick={() => setChartType("bar")}
@@ -117,18 +136,61 @@ export default function FinanceChart({ transactions }: Props) {
         </div>
       </div>
 
-      <div className="w-full h-[350px]">
+      {/* Filtros de período e categoria */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {/* Período */}
+        <div className="flex gap-2 p-1 bg-slate-950/40 rounded-xl border border-white/5">
+          <button
+            onClick={() => setPeriod("month")}
+            className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+              period === "month"
+                ? "bg-indigo-600 text-white"
+                : "text-slate-500 hover:text-slate-300"
+            }`}
+          >
+            Mês
+          </button>
+          <button
+            onClick={() => setPeriod("week")}
+            className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+              period === "week"
+                ? "bg-indigo-600 text-white"
+                : "text-slate-500 hover:text-slate-300"
+            }`}
+          >
+            Semana
+          </button>
+        </div>
+
+        {/* Categoria */}
+        <div className="relative flex-1">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full bg-slate-950/40 border border-white/5 rounded-xl px-4 py-2 text-xs font-bold text-slate-300 appearance-none cursor-pointer"
+            style={{ paddingLeft: selectedCategoryObj ? "2.5rem" : undefined }}
+          >
+            <option value="all">📊 Todas as categorias</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
+              </option>
+            ))}
+          </select>
+          {selectedCategoryObj && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base pointer-events-none">
+              {selectedCategoryObj.icon}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Gráfico */}
+      <div className="w-full h-[300px]">
         {chartType === "bar" ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 20, right: 0, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#ffffff05"
-                vertical={false}
-              />
+            <BarChart data={barData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
               <XAxis
                 dataKey="name"
                 stroke="#64748b"
@@ -181,20 +243,8 @@ export default function FinanceChart({ transactions }: Props) {
                   letterSpacing: "0.1em",
                 }}
               />
-              <Bar
-                dataKey="receitas"
-                fill="#10b981"
-                radius={[8, 8, 0, 0]}
-                name="Receitas"
-                barSize={32}
-              />
-              <Bar
-                dataKey="despesas"
-                fill="#f43f5e"
-                radius={[8, 8, 0, 0]}
-                name="Despesas"
-                barSize={32}
-              />
+              <Bar dataKey="receitas" fill="#10b981" radius={[8, 8, 0, 0]} name="Receitas" barSize={28} />
+              <Bar dataKey="despesas" fill="#f43f5e" radius={[8, 8, 0, 0]} name="Despesas" barSize={28} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
@@ -205,14 +255,14 @@ export default function FinanceChart({ transactions }: Props) {
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={120}
-                  innerRadius={80}
+                  outerRadius={110}
+                  innerRadius={75}
                   dataKey="value"
                   stroke="none"
                   paddingAngle={1}
                 >
                   {pieData.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index]} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -230,14 +280,9 @@ export default function FinanceChart({ transactions }: Props) {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-              <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                Total
-              </p>
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total</p>
               <p className="text-white text-xl font-black tracking-tighter">
-                R${" "}
-                {(totalIncome + totalExpense).toLocaleString("pt-BR", {
-                  minimumFractionDigits: 0,
-                })}
+                R$ {(totalIncome + totalExpense).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}
               </p>
             </div>
           </div>

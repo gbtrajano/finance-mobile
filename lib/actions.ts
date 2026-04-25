@@ -1,14 +1,39 @@
 'use server'
 
 import { getSupabaseClient } from './supabase-server'
-import { TransactionFormData, Transaction } from './types'
+import { TransactionFormData, Transaction, Category } from './types'
 import { revalidatePath } from 'next/cache'
+
+export async function getCategories(): Promise<Category[]> {
+    const supabase = await getSupabaseClient()
+    const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true })
+
+    if (error) throw new Error(error.message)
+    return data as Category[]
+}
+
+export async function createCategory(data: { name: string; icon: string; color: string }) {
+    const supabase = await getSupabaseClient()
+    const { error } = await supabase.from('categories').insert(data)
+    if (error) throw new Error(error.message)
+    revalidatePath('/')
+}
+
+export async function deleteCategory(id: string) {
+    const supabase = await getSupabaseClient()
+    const { error } = await supabase.from('categories').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/')
+}
 
 export async function getTransactions(): Promise<Transaction[]> {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
         .from('transactions')
-        .select('*')
+        .select('*, category:categories(*)')
         .order('transaction_date', { ascending: false })
 
     if (error) throw new Error(error.message)
@@ -25,6 +50,7 @@ export async function createTransaction(formData: TransactionFormData) {
         amount: formData.amount,
         type: formData.type,
         transaction_date: dateTime,
+        category_id: formData.category_id || null,
     })
 
     if (error) throw new Error(error.message)
@@ -43,6 +69,7 @@ export async function updateTransaction(id: string, formData: TransactionFormDat
             amount: formData.amount,
             type: formData.type,
             transaction_date: dateTime,
+            category_id: formData.category_id || null,
         })
         .eq('id', id)
 

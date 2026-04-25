@@ -17,3 +17,54 @@ body {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
 }
+
+/* =============================
+   DESIGN SYSTEM — UTILITY CLASSES
+   ============================= */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  outline: none;
+  transition: border-color 0.2s;
+  color: #f8fafc;
+}
+
+.glass-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.glass-input::placeholder {
+  color: #475569;
+}
+
+/* Fixes native select on dark theme */
+.glass-input option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.premium-gradient-text {
+  background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.premium-button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.premium-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.premium-button:active:not(:disabled) {
+  transform: translateY(0);
+}

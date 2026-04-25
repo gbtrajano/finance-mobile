@@ -2,111 +2,129 @@
 import { logoutAction } from "./login/actions";
 import { useState } from "react";
 import {
-  Wallet,
-  Bell,
-  Search,
-  User,
-  LayoutDashboard,
-  Settings,
-  LogOut,
-  ChevronRight,
+    Wallet,
+    LayoutDashboard,
+    Settings,
+    LogOut,
+    ChevronRight,
+    Search,
 } from "lucide-react";
-import { Transaction } from "../../lib/types";
+import { Transaction, Category } from "../../lib/types";
 import TransactionForm from "../../components/TransactionForm";
 import TransactionList from "../../components/TransactionList";
 import FinanceChart from "../../components/FinanceChart";
 import SummaryCards from "../../components/SummaryCards";
+import CategoryManager from "../../components/CategoryManager";
 
 interface HomeClientProps {
-  transactions: Transaction[];
-  summary: { balance: number; totalIncome: number; totalExpense: number };
+    transactions: Transaction[];
+    summary: { balance: number; totalIncome: number; totalExpense: number };
+    categories: Category[];
 }
 
-export default function HomeClient({ transactions, summary }: HomeClientProps) {
-  const [editingTransaction, setEditingTransaction] =
-    useState<Transaction | null>(null);
+export default function HomeClient({ transactions, summary, categories }: HomeClientProps) {
+    const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+    const [showCategoryManager, setShowCategoryManager] = useState(false);
 
-  return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[#020617]">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-24 flex-col items-center py-8 border-r border-white/5 bg-slate-950/20 backdrop-blur-3xl sticky top-0 h-screen">
-        <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-xl shadow-blue-500/20 mb-12">
-          <Wallet size={24} className="text-white" />
+    return (
+        <div className="min-h-screen flex flex-col md:flex-row bg-[#020617]">
+            {/* Sidebar - Desktop */}
+            <aside className="hidden md:flex w-24 flex-col items-center py-8 border-r border-white/5 bg-slate-950/20 backdrop-blur-3xl sticky top-0 h-screen">
+                <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-xl shadow-blue-500/20 mb-12">
+                    <Wallet size={24} className="text-white" />
+                </div>
+
+                <nav className="flex-1 flex flex-col gap-8">
+                    <button className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <LayoutDashboard size={24} />
+                    </button>
+                    <button
+                        onClick={() => setShowCategoryManager(true)}
+                        title="Gerenciar Categorias"
+                        className="p-3 rounded-2xl text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                    >
+                        <Settings size={24} />
+                    </button>
+                </nav>
+
+                <button
+                    onClick={() => logoutAction()}
+                    className="p-3 rounded-2xl text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-auto"
+                >
+                    <LogOut size={24} />
+                </button>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
+                {/* Header */}
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                    <div>
+                        <h1 className="text-4xl font-black premium-gradient-text tracking-tighter">
+                            Olá, Gabriel Trajano
+                        </h1>
+                        <div className="flex items-center gap-2 text-slate-500 text-sm font-semibold mt-1">
+                            <span>Dashboard</span>
+                            <ChevronRight size={14} />
+                            <span className="text-slate-400">Visão Geral</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        {/* Botão mobile de categorias */}
+                        <button
+                            onClick={() => setShowCategoryManager(true)}
+                            className="md:hidden flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest transition-all hover:bg-indigo-500/20"
+                        >
+                            <Settings size={14} /> Categorias
+                        </button>
+                        <div className="hidden lg:flex items-center gap-3 px-5 py-3 bg-slate-950/50 rounded-2xl border border-white/5 w-80 group focus-within:border-blue-500/30 transition-all">
+                            <Search size={18} className="text-slate-500 group-focus-within:text-blue-400" />
+                            <input
+                                type="text"
+                                placeholder="Pesquisar transações..."
+                                className="bg-transparent border-none outline-none text-sm text-slate-300 placeholder-slate-600 w-full"
+                            />
+                        </div>
+                    </div>
+                </header>
+
+                <SummaryCards
+                    balance={summary.balance}
+                    totalIncome={summary.totalIncome}
+                    totalExpense={summary.totalExpense}
+                />
+
+                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 mt-12 items-start">
+                    {/* Form — Mobile: primeiro / Desktop: direita */}
+                    <div className="order-1 lg:order-2 lg:col-span-4 lg:sticky lg:top-8 w-full">
+                        <TransactionForm
+                            editingTransaction={editingTransaction}
+                            onCancelEdit={() => setEditingTransaction(null)}
+                            categories={categories}
+                            onManageCategories={() => setShowCategoryManager(true)}
+                        />
+                    </div>
+
+                    {/* Lista + Gráfico — Mobile: lista antes, gráfico depois / Desktop: gráfico no topo */}
+                    <div className="order-2 lg:order-1 lg:col-span-8 flex flex-col-reverse lg:flex-col gap-8 w-full">
+                        <FinanceChart transactions={transactions} categories={categories} />
+                        <TransactionList
+                            transactions={transactions}
+                            onEdit={(t) => setEditingTransaction(t)}
+                            categories={categories}
+                        />
+                    </div>
+                </div>
+            </main>
+
+            {/* Modal de categorias */}
+            {showCategoryManager && (
+                <CategoryManager
+                    categories={categories}
+                    onClose={() => setShowCategoryManager(false)}
+                />
+            )}
         </div>
-
-        <nav className="flex-1 flex flex-col gap-8">
-          <button className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <LayoutDashboard size={24} />
-          </button>
-          <button className="p-3 rounded-2xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all">
-            <Settings size={24} />
-          </button>
-        </nav>
-
-        <button 
-          onClick={() => logoutAction()}
-          className="p-3 rounded-2xl text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-auto"
-        >
-          <LogOut size={24} />
-        </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-4xl font-black premium-gradient-text tracking-tighter">
-              Olá, Gabriel Trajano
-            </h1>
-            <div className="flex items-center gap-2 text-slate-500 text-sm font-semibold mt-1">
-              <span>Dashboard</span>
-              <ChevronRight size={14} />
-              <span className="text-slate-400">Visão Geral</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-3 px-5 py-3 bg-slate-950/50 rounded-2xl border border-white/5 w-80 group focus-within:border-blue-500/30 transition-all">
-              <Search
-                size={18}
-                className="text-slate-500 group-focus-within:text-blue-400"
-              />
-              <input
-                type="text"
-                placeholder="Pesquisar transações..."
-                className="bg-transparent border-none outline-none text-sm text-slate-300 placeholder-slate-600 w-full"
-              />
-            </div>
-          </div>
-        </header>
-
-        <SummaryCards
-          balance={summary.balance}
-          totalIncome={summary.totalIncome}
-          totalExpense={summary.totalExpense}
-        />
-
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 mt-12 items-start">
-          {/* No mobile, o form vem primeiro que a lista e o gráfico. No desktop, fica na direita (col-span-4) */}
-          <div className="order-1 lg:order-2 lg:col-span-4 lg:sticky lg:top-8 w-full">
-            <TransactionForm
-              editingTransaction={editingTransaction}
-              onCancelEdit={() => setEditingTransaction(null)}
-            />
-          </div>
-
-          {/* No mobile, invertemos a ordem para que a Lista venha antes do Gráfico (List no topo) */}
-          {/* No desktop, o Gráfico volta para o topo (flex-col) */}
-          <div className="order-2 lg:order-1 lg:col-span-8 flex flex-col-reverse lg:flex-col gap-8 w-full">
-            <FinanceChart transactions={transactions} />
-            <TransactionList
-              transactions={transactions}
-              onEdit={(t) => setEditingTransaction(t)}
-            />
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+    );
 }
