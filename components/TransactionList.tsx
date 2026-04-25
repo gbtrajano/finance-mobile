@@ -118,19 +118,19 @@ export default function TransactionList({ transactions, onEdit, categories }: Pr
                                     {t.type === 'income' ? '+' : '-'} R$ {Number(t.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                                 
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => onEdit(t)}
-                                        className="p-1.5 rounded-lg hover:bg-white/5 text-[#636366] hover:text-white transition-colors"
+                                        className="p-1.5 rounded-lg bg-white/5 md:bg-transparent hover:bg-white/10 text-[#8e8e93] hover:text-white transition-colors"
                                     >
-                                        <Edit2 size={12} />
+                                        <Edit2 size={14} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(t.id)}
                                         disabled={deleting === t.id}
-                                        className="p-1.5 rounded-lg hover:bg-rose-500/10 text-[#636366] hover:text-rose-400 transition-colors"
+                                        className="p-1.5 rounded-lg bg-white/5 md:bg-transparent hover:bg-rose-500/10 text-[#8e8e93] hover:text-rose-400 transition-colors"
                                     >
-                                        <Trash2 size={12} />
+                                        <Trash2 size={14} />
                                     </button>
                                 </div>
                             </div>
