@@ -87,19 +87,22 @@ export default function HomeClient({ transactions, summary }: HomeClientProps) {
           totalExpense={summary.totalExpense}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12 items-start">
-          <div className="lg:col-span-8 space-y-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 mt-12 items-start">
+          {/* No mobile, o form vem primeiro que a lista e o gráfico. No desktop, fica na direita (col-span-4) */}
+          <div className="order-1 lg:order-2 lg:col-span-4 lg:sticky lg:top-8 w-full">
+            <TransactionForm
+              editingTransaction={editingTransaction}
+              onCancelEdit={() => setEditingTransaction(null)}
+            />
+          </div>
+
+          {/* No mobile, invertemos a ordem para que a Lista venha antes do Gráfico (List no topo) */}
+          {/* No desktop, o Gráfico volta para o topo (flex-col) */}
+          <div className="order-2 lg:order-1 lg:col-span-8 flex flex-col-reverse lg:flex-col gap-8 w-full">
             <FinanceChart transactions={transactions} />
             <TransactionList
               transactions={transactions}
               onEdit={(t) => setEditingTransaction(t)}
-            />
-          </div>
-
-          <div className="lg:col-span-4 lg:sticky lg:top-8">
-            <TransactionForm
-              editingTransaction={editingTransaction}
-              onCancelEdit={() => setEditingTransaction(null)}
             />
           </div>
         </div>
