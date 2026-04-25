@@ -51,8 +51,8 @@ export default function TransactionList({ transactions, onEdit, categories }: Pr
                 <h3 className="text-lg font-bold text-[#f2f2f7]">Atividade Recente</h3>
             </div>
 
-            {/* Filtro por categoria Horizontal scrollable */}
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {/* Filtro por categoria - Scroll no mobile, Wrap no desktop */}
+            <div className="flex md:flex-wrap gap-2 overflow-x-auto md:overflow-visible pb-2 scrollbar-hide">
                 <button
                     onClick={() => setFilterCategory('all')}
                     className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${filterCategory === 'all'
