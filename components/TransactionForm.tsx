@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createTransaction, updateTransaction } from '../lib/actions'
 import { Transaction, TransactionFormData, Category } from '../lib/types'
-import { Plus, Save, X, Calendar, Clock, FileText, DollarSign, Tag, Settings2 } from 'lucide-react'
+import { Plus, Save, X, Calendar, Clock, FileText, DollarSign, Tag } from 'lucide-react'
 
 interface Props {
     editingTransaction?: Transaction | null
@@ -29,12 +29,15 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
     useEffect(() => {
         if (editingTransaction) {
             const d = new Date(editingTransaction.transaction_date)
+            const yyyy = d.getFullYear()
+            const mm = String(d.getMonth() + 1).padStart(2, '0')
+            const dd = String(d.getDate()).padStart(2, '0')
             setForm({
                 title: editingTransaction.title,
                 description: editingTransaction.description || '',
                 amount: Number(editingTransaction.amount),
                 type: editingTransaction.type,
-                date: d.toISOString().split('T')[0],
+                date: `${yyyy}-${mm}-${dd}`,
                 time: d.toTimeString().slice(0, 5),
                 category_id: editingTransaction.category_id || null,
             })
@@ -60,6 +63,14 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
         } finally {
             setLoading(false)
         }
+    }
+
+    // Formata YYYY-MM-DD para DD/MM
+    const getDisplayDate = () => {
+        if (!form.date) return '--/--'
+        const parts = form.date.split('-')
+        if (parts.length !== 3) return '--/--'
+        return `${parts[2]}/${parts[1]}`
     }
 
     return (
@@ -144,17 +155,10 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
 
                 {/* Categoria */}
                 <div>
-                    <div className="flex items-center justify-between mb-2 px-1">
+                    <div className="mb-2 px-1">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
                             <Tag size={14} /> Categoria
                         </label>
-                        <button
-                            type="button"
-                            onClick={onManageCategories}
-                            className="flex items-center gap-1 text-[10px] font-black text-slate-500 hover:text-indigo-400 uppercase tracking-widest transition-colors"
-                        >
-                            <Settings2 size={11} /> Gerenciar
-                        </button>
                     </div>
 
                     {/* Chips de seleção */}
@@ -185,15 +189,6 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
                                 {cat.icon} {cat.name}
                             </button>
                         ))}
-                        {categories.length === 0 && (
-                            <button
-                                type="button"
-                                onClick={onManageCategories}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-400 border border-indigo-500/20 bg-indigo-500/10 hover:bg-indigo-500/20 transition-all"
-                            >
-                                <Plus size={12} /> Criar primeira categoria
-                            </button>
-                        )}
                     </div>
                 </div>
 
@@ -203,13 +198,23 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">
                             <Calendar size={14} /> Data
                         </label>
-                        <input
-                            type="date"
-                            required
-                            value={form.date}
-                            onChange={(e) => setForm({ ...form, date: e.target.value })}
-                            className="glass-input w-full px-5 py-4 rounded-2xl [color-scheme:dark]"
-                        />
+                        <div className="relative">
+                            {/* Overlay visual: mostra apenas DD/MM */}
+                            <div className="glass-input w-full px-4 py-3 rounded-2xl text-sm flex items-center justify-between pointer-events-none">
+                                <span className="text-[#f2f2f7] font-medium">{getDisplayDate()}</span>
+                                <div className="w-4 h-4 rounded-full bg-white/5 flex items-center justify-center">
+                                    <div className="w-1 h-1 bg-[#8e8e93] rounded-full" />
+                                </div>
+                            </div>
+                            {/* Input real: invisível mas funcional */}
+                            <input
+                                type="date"
+                                required
+                                value={form.date}
+                                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [color-scheme:dark]"
+                            />
+                        </div>
                     </div>
                     <div>
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">
@@ -220,7 +225,7 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
                             required
                             value={form.time}
                             onChange={(e) => setForm({ ...form, time: e.target.value })}
-                            className="glass-input w-full px-5 py-4 rounded-2xl [color-scheme:dark]"
+                            className="glass-input w-full px-4 py-3 rounded-2xl text-sm [color-scheme:dark]"
                         />
                     </div>
                 </div>

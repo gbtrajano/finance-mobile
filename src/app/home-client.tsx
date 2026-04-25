@@ -63,8 +63,8 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
                         <button
                             onClick={() => setActiveTab("dashboard")}
                             className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${activeTab === "dashboard"
-                                    ? "bg-[#2c2c31] text-white shadow-lg"
-                                    : "text-[#636366] hover:text-[#aeaeb2]"
+                                ? "bg-[#2c2c31] text-white shadow-lg"
+                                : "text-[#636366] hover:text-[#aeaeb2]"
                                 }`}
                         >
                             Dashboard
@@ -72,8 +72,8 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
                         <button
                             onClick={() => setActiveTab("analytics")}
                             className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${activeTab === "analytics"
-                                    ? "bg-[#2c2c31] text-white shadow-lg"
-                                    : "text-[#636366] hover:text-[#aeaeb2]"
+                                ? "bg-[#2c2c31] text-white shadow-lg"
+                                : "text-[#636366] hover:text-[#aeaeb2]"
                                 }`}
                         >
                             Análise
