@@ -28,7 +28,7 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
                 {/* Header */}
                 <header className="flex items-start justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-black text-[#f2f2f7] tracking-tighter">
+                        <h1 className="text-2xl md:text-4xl font-black text-[#f2f2f7] tracking-tighter">
                             Olá, Gabriel Trajano
                         </h1>
                         <div className="flex items-center gap-1 text-[#8e8e93] text-sm font-semibold mt-1">
@@ -62,21 +62,19 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
                     <div className="flex w-full md:w-auto gap-2 p-1.5 rounded-[1.25rem] bg-[#1c1c1f] border border-white/5 shadow-inner">
                         <button
                             onClick={() => setActiveTab("dashboard")}
-                            className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${
-                                activeTab === "dashboard"
+                            className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${activeTab === "dashboard"
                                     ? "bg-[#2c2c31] text-white shadow-lg"
                                     : "text-[#636366] hover:text-[#aeaeb2]"
-                            }`}
+                                }`}
                         >
                             Dashboard
                         </button>
                         <button
                             onClick={() => setActiveTab("analytics")}
-                            className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${
-                                activeTab === "analytics"
+                            className={`flex-1 md:flex-none md:min-w-[140px] py-3 px-6 rounded-[0.9rem] text-sm font-black transition-all duration-300 ${activeTab === "analytics"
                                     ? "bg-[#2c2c31] text-white shadow-lg"
                                     : "text-[#636366] hover:text-[#aeaeb2]"
-                            }`}
+                                }`}
                         >
                             Análise
                         </button>
