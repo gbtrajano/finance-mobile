@@ -3,25 +3,24 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function loginAction(prevState: any, formData: FormData) {
-  const email = formData.get("email");
+  const username = formData.get("username");
   const password = formData.get("password");
 
-  const EMAIL_CORRETO = "gabriel@teste.com";
-  const SENHA_CORRETA = "admin123";
+  const USUARIO_CORRETO = "gabriel";
+  const SENHA_CORRETA = "amoajhey";
 
-  if (email === EMAIL_CORRETO && password === SENHA_CORRETA) {
+  if (username === USUARIO_CORRETO && password === SENHA_CORRETA) {
     const cookieStore = await cookies();
 
     cookieStore.set("auth_token", "sessao_valida", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24,
       path: "/",
     });
 
     redirect("/");
   } else {
-    return { error: "E-mail ou senha inválidos!" };
+    return { error: "Usuário ou senha inválidos!" };
   }
 }
 
