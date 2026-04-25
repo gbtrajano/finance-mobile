@@ -1,9 +1,14 @@
 "use client";
 import { loginAction } from "./actions";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 const LoginPage = () => {
   const [state, formAction, isPending] = useActionState(loginAction, null);
+
+  // Initialize session flag so the Home page knows this tab is "authorized"
+  useEffect(() => {
+    sessionStorage.setItem("tab_session_active", "true");
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#090b11] text-white flex flex-col items-center justify-center p-4">

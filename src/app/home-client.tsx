@@ -1,6 +1,6 @@
 "use client";
 import { logoutAction } from "./login/actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogOut, Settings, ChevronRight } from "lucide-react";
 import { Transaction, Category } from "../../lib/types";
 import TransactionForm from "../../components/TransactionForm";
@@ -19,6 +19,20 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
     const [activeTab, setActiveTab] = useState<"dashboard" | "analytics">("dashboard");
+
+    // Session Guard: Logout if this is a fresh tab/browser instance
+    useEffect(() => {
+        const isTabSessionActive = sessionStorage.getItem("tab_session_active");
+        if (!isTabSessionActive) {
+            // New tab or browser instance - force re-login
+            logoutAction();
+        }
+    }, []);
+
+    // Mark this tab as active for the duration of its life
+    useEffect(() => {
+        sessionStorage.setItem("tab_session_active", "true");
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#111114]">
