@@ -17,8 +17,8 @@ const defaultState: TransactionFormData = {
     description: '',
     amount: 0,
     type: 'expense',
-    date: new Date().toISOString().split('T')[0],
-    time: new Date().toTimeString().slice(0, 5),
+    date: '', // Será preenchido no useEffect ou via Date()
+    time: '',
     category_id: null,
 }
 
@@ -29,20 +29,22 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
     useEffect(() => {
         if (editingTransaction) {
             const d = new Date(editingTransaction.transaction_date)
-            const yyyy = d.getFullYear()
-            const mm = String(d.getMonth() + 1).padStart(2, '0')
-            const dd = String(d.getDate()).padStart(2, '0')
             setForm({
                 title: editingTransaction.title,
                 description: editingTransaction.description || '',
                 amount: Number(editingTransaction.amount),
                 type: editingTransaction.type,
-                date: `${yyyy}-${mm}-${dd}`,
+                date: d.toLocaleDateString('en-CA'),
                 time: d.toTimeString().slice(0, 5),
                 category_id: editingTransaction.category_id || null,
             })
         } else {
-            setForm(defaultState)
+            const now = new Date()
+            setForm({
+                ...defaultState,
+                date: now.toLocaleDateString('en-CA'),
+                time: now.toTimeString().slice(0, 5),
+            })
         }
     }, [editingTransaction])
 
@@ -52,12 +54,22 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
 
         setLoading(true)
         try {
+            // Combina data e hora locais e converte para ISO (UTC)
+            const localDateTime = new Date(`${form.date}T${form.time}`)
+            const payload = { ...form, date: localDateTime.toISOString() }
+
             if (editingTransaction) {
-                await updateTransaction(editingTransaction.id, form)
+                await updateTransaction(editingTransaction.id, payload)
             } else {
-                await createTransaction(form)
+                await createTransaction(payload)
             }
-            setForm(defaultState)
+            
+            const now = new Date()
+            setForm({
+                ...defaultState,
+                date: now.toLocaleDateString('en-CA'),
+                time: now.toTimeString().slice(0, 5),
+            })
         } catch (err) {
             alert(err instanceof Error ? err.message : 'Erro ao salvar')
         } finally {

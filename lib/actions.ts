@@ -42,7 +42,7 @@ export async function getTransactions(): Promise<Transaction[]> {
 
 export async function createTransaction(formData: TransactionFormData) {
     const supabase = await getSupabaseClient()
-    const dateTime = `${formData.date}T${formData.time}:00`
+    const dateTime = formData.date.includes('T') ? formData.date : `${formData.date}T${formData.time}:00`
 
     const { error } = await supabase.from('transactions').insert({
         title: formData.title,
@@ -59,7 +59,7 @@ export async function createTransaction(formData: TransactionFormData) {
 
 export async function updateTransaction(id: string, formData: TransactionFormData) {
     const supabase = await getSupabaseClient()
-    const dateTime = `${formData.date}T${formData.time}:00`
+    const dateTime = formData.date.includes('T') ? formData.date : `${formData.date}T${formData.time}:00`
 
     const { error } = await supabase
         .from('transactions')
