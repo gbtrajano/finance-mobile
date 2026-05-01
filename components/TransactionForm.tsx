@@ -60,6 +60,7 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
 
             if (editingTransaction) {
                 await updateTransaction(editingTransaction.id, payload)
+                onCancelEdit() // Limpa o estado de edição no componente pai
             } else {
                 await createTransaction(payload)
             }

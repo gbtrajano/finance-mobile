@@ -108,7 +108,7 @@ export default function HomeClient({ transactions, summary, categories }: HomeCl
                 {activeTab === "dashboard" && (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Transaction List - Main area on desktop */}
-                        <div className="order-2 md:order-1 md:col-span-7 lg:col-span-8">
+                        <div className="order-2 md:order-1 md:col-span-7 lg:col-span-8 h-fit max-h-[720px] overflow-y-auto pr-2 custom-scrollbar">
                             <TransactionList
                                 transactions={transactions}
                                 onEdit={(t) => setEditingTransaction(t)}
