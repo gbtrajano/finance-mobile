@@ -73,6 +73,19 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
         return `${parts[2]}/${parts[1]}`
     }
 
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value)
+    }
+
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value.replace(/\D/g, '')
+        const numericValue = Number(rawValue) / 100
+        setForm({ ...form, amount: numericValue })
+    }
+
     return (
         <form onSubmit={handleSubmit} className="glass-card rounded-[2.5rem] p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[100px] rounded-full -mr-16 -mt-16" />
@@ -142,12 +155,10 @@ export default function TransactionForm({ editingTransaction, onCancelEdit, cate
                         <DollarSign size={14} /> Valor (R$)
                     </label>
                     <input
-                        type="number"
+                        type="text"
                         required
-                        min="0.01"
-                        step="0.01"
-                        value={form.amount || ''}
-                        onChange={(e) => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })}
+                        value={formatCurrency(form.amount)}
+                        onChange={handleAmountChange}
                         placeholder="0,00"
                         className="glass-input w-full px-5 py-4 rounded-2xl font-mono text-lg"
                     />
